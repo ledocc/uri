@@ -1,0 +1,61 @@
+#ifndef uri__basic_uri_hpp
+#define uri__basic_uri_hpp
+
+
+
+#include <vector>
+
+#include <uri/traits.hpp>
+
+
+
+namespace uri {
+
+template < typename ProtocolTag >
+class basic_uri
+{
+public:
+    using protocol_tag = ProtocolTag;
+
+    using this_type = basic_uri<protocol_tag>;
+
+    using scheme_type   = typename traits<this_type>::scheme_type;
+    using userinfo_type = typename traits<this_type>::userinfo_type;
+    using host_type     = typename traits<this_type>::host_type;
+    using port_type     = typename traits<this_type>::port_type;
+    using path_type     = typename traits<this_type>::path_type;
+    using query_type    = typename traits<this_type>::query_type;
+    using fragment_type = typename traits<this_type>::fragment_type;
+
+
+public:
+    const scheme_type &   scheme()   const { return _scheme;   }
+    const userinfo_type & userinfo() const { return _userinfo; }
+    const host_type &     host()     const { return _host;     }
+    const port_type &     port()     const { return _port;     }
+    const path_type &     path()     const { return _path;     }
+    const query_type &    query()    const { return _query;    }
+    const fragment_type & fragment() const { return _fragment; }
+
+    void scheme(  const scheme_type & scheme_)     { _scheme   = scheme_;   }
+    void userinfo(const userinfo_type & userinfo_) { _userinfo = userinfo_; }
+    void host(    const host_type & host_)         { _host     = host_;     }
+    void port(    const port_type & port_)         { _port     = port_;     }
+    void path(    const path_type & path_)         { _path     = path_;     }
+    void query(   const query_type & query_ )      { _query    = query_;    }
+    void fragment(const fragment_type & fragment_) { _fragment = fragment_; }
+
+
+private:
+    scheme_type   _scheme;
+    userinfo_type _userinfo;
+    host_type     _host;
+    port_type     _port;
+    path_type     _path;
+    query_type    _query;
+    fragment_type _fragment;
+};
+
+} // namespace uri
+
+#endif // uri__basic_uri_hpp
