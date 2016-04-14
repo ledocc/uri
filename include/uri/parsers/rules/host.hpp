@@ -6,38 +6,26 @@
 #include <string>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_fusion.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/fusion/include/std_tuple.hpp>
 
 #include <uri/parsers/rules/character.hpp>
 #include <uri/parsers/rules/ip.hpp>
 
 
 
-namespace phoenix = boost::phoenix;
-namespace fusion = boost::fusion;
-namespace spirit = boost::spirit;
-namespace ascii = boost::spirit::ascii;
-namespace qi = boost::spirit::qi;
-
 namespace uri { namespace parsers { namespace rules {
 
-
-template <typename Iterator, typename HostT>
-struct host
+template <typename Iterator>
+class host
 {
-    using rule_type = qi::rule<Iterator, std::string()>;
+public:
+    using rule_type = boost::spirit::qi::rule<Iterator, std::string()>;
 
+
+public:
     host()
     {
-        using namespace qi::labels;
+        namespace ascii = boost::spirit::ascii;
 
-        using boost::phoenix::at_c;
-        using boost::phoenix::ref;
 
         // host          =  IP-literal /  IPv4address /  reg-name
         _host            = _IP_literal | _ip.v4()     | _reg_name;
@@ -60,10 +48,9 @@ struct host
 
 
 private:
-    qi::rule<Iterator, HostT()>       _host;
-    qi::rule<Iterator, std::string()> _IP_literal;
-    qi::rule<Iterator, std::string()> _reg_name;
-    qi::rule<Iterator, std::string()> _pct_encoded;
+    rule_type _host;
+    rule_type _IP_literal;
+    rule_type _reg_name;
     rules::ip<Iterator> _ip;
     rules::character<Iterator> _char;
 };

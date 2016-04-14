@@ -1,38 +1,30 @@
 #ifndef uri__parsers__rules__path_hpp
 #define uri__parsers__rules__path_hpp
 
-#define BOOST_SPIRIT_DEBUG
+
 
 #include <string>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_fusion.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/fusion/include/std_tuple.hpp>
 
 #include <uri/parsers/rules/character.hpp>
 
 
 
-namespace phoenix = boost::phoenix;
-namespace fusion = boost::fusion;
-namespace spirit = boost::spirit;
-namespace ascii = boost::spirit::ascii;
-namespace qi = boost::spirit::qi;
-
 namespace uri { namespace parsers { namespace rules {
-
 
 template <typename Iterator>
 class path
-{public:
-    using rule_string = qi::rule<Iterator, std::string()>;
+{
+public:
+    using rule_type = boost::spirit::qi::rule<Iterator, std::string()>;
+
 
     path()
     {
+        namespace ascii = boost::spirit::ascii;
+
+
         _path            = _path_abempty
                          | _path_absolute
                          | _path_noscheme
@@ -70,24 +62,24 @@ class path
         BOOST_SPIRIT_DEBUG_NODE(_path_empty);
     }
 
-    const rule_string & operator()() const { return _path; }
-    const rule_string & abempty() const    { return _path_abempty; }
-    const rule_string & noscheme() const   { return _path_noscheme; }
-    const rule_string & rootless() const   { return _path_rootless; }
-    const rule_string & absolute() const   { return _path_absolute; }
-    const rule_string & empty() const      { return _path_empty; }
+    const rule_type & operator()() const { return _path; }
+    const rule_type & abempty() const    { return _path_abempty; }
+    const rule_type & noscheme() const   { return _path_noscheme; }
+    const rule_type & rootless() const   { return _path_rootless; }
+    const rule_type & absolute() const   { return _path_absolute; }
+    const rule_type & empty() const      { return _path_empty; }
 
 
 private:
-    rule_string _path;
-    rule_string _path_abempty;
-    rule_string _path_absolute;
-    rule_string _path_noscheme;
-    rule_string _path_rootless;
-    rule_string _path_empty;
-    rule_string _segment;
-    rule_string _segment_nz;
-    rule_string _segment_nz_nc;
+    rule_type _path;
+    rule_type _path_abempty;
+    rule_type _path_absolute;
+    rule_type _path_noscheme;
+    rule_type _path_rootless;
+    rule_type _path_empty;
+    rule_type _segment;
+    rule_type _segment_nz;
+    rule_type _segment_nz_nc;
     rules::character<Iterator> _char;
 };
 

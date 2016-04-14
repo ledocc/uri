@@ -6,34 +6,24 @@
 #include <string>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_fusion.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/fusion/include/std_tuple.hpp>
 
 #include <uri/parsers/rules/character.hpp>
 
 
 
-namespace phoenix = boost::phoenix;
-namespace fusion = boost::fusion;
-namespace spirit = boost::spirit;
-namespace ascii = boost::spirit::ascii;
-namespace qi = boost::spirit::qi;
-
 namespace uri { namespace parsers { namespace rules {
-
 
 template <typename Iterator>
 class ip
 {
 public:
-    using rule_string = qi::rule<Iterator, std::string()>;
+    using rule_type = boost::spirit::qi::rule<Iterator, std::string()>;
 
     ip()
     {
+        namespace ascii = boost::spirit::ascii;
+        namespace qi = boost::spirit::qi;
+
         using namespace qi::labels;
 
         using boost::phoenix::at_c;
@@ -93,22 +83,22 @@ public:
         BOOST_SPIRIT_DEBUG_NODE(_IPvFuture);
     }
 
-    const rule_string & v4() const      { return _IPv4address; }
-    const rule_string & v6() const      { return _IPv6address; }
-    const rule_string & vFuture() const { return _IPvFuture; }
+    const rule_type & v4() const      { return _IPv4address; }
+    const rule_type & v6() const      { return _IPv6address; }
+    const rule_type & vFuture() const { return _IPvFuture; }
 
 
 private:
-    rule_string _IPvFuture;
-    rule_string _IPv6address;
-    rule_string _h16;
-    rule_string _h16_colon;
-    rule_string _ls32;
-    rule_string _IPv4address;
-    rule_string _dec_octet;
+    rule_type _IPvFuture;
+    rule_type _IPv6address;
+    rule_type _h16;
+    rule_type _h16_colon;
+    rule_type _ls32;
+    rule_type _IPv4address;
+    rule_type _dec_octet;
     rules::character<Iterator> _char;
 };
 
 }}} // namespace uri::parsers::rules
 
-#endif // #define uri__parsers__rules__host_hpp
+#endif // uri__parsers__rules__ip_hpp

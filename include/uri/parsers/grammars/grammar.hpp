@@ -14,8 +14,14 @@
 #include <boost/fusion/include/std_tuple.hpp>
 
 #include <uri/parsers/rules/character.hpp>
+#include <uri/parsers/rules/fragment.hpp>
 #include <uri/parsers/rules/host.hpp>
+#include <uri/parsers/rules/ip.hpp>
 #include <uri/parsers/rules/path.hpp>
+#include <uri/parsers/rules/port.hpp>
+#include <uri/parsers/rules/query.hpp>
+#include <uri/parsers/rules/scheme.hpp>
+#include <uri/parsers/rules/userinfo.hpp>
 
 #include <uri/fusion/adapted_basic_uri.hpp>
 #include <uri/phoenix/adapted_basic_uri_accessor.hpp>
@@ -39,12 +45,11 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
         using namespace qi::labels;
 
         using boost::phoenix::at_c;
-        using boost::phoenix::ref;
 
 
         // URI           =  scheme   ":"    hier-part   [  "?"    query ]   [  "#"    fragment ]
 //          _uri             = _scheme > ':' > _hier_part > -( '?' > _query ) > -( '#' > _fragment );
-        _uri             = _scheme[phoenix::scheme_(_val) = _1]
+        _uri             = _scheme()[phoenix::scheme_(_val) = _1]
                          > ':' > _hier_part
                             [
                                 phoenix::userinfo_(_val) = at_c<0>(_1),
@@ -52,8 +57,8 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
                                 phoenix::port_(_val)     = at_c<2>(_1),
                                 phoenix::path_(_val)     = at_c<3>(_1)
                             ]
-                         > -( '?' > _query[phoenix::query_(_val) = _1] )
-                         > -( '#' > _fragment[phoenix::fragment_(_val) = _1] );
+                         > -( '?' > _query()[phoenix::query_(_val) = _1] )
+                         > -( '#' > _fragment()[phoenix::fragment_(_val) = _1] );
 
         // hier-part     = "//"     authority     path-abempty
         //               /  path-absolute
@@ -75,10 +80,10 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
         _uri_reference   = _uri | _relative_ref;
 
         // absolute-URI  =  scheme    ":"     hier-part    [  "?"     query ]
-        _absolute_uri    = _scheme > ':' > _hier_part > -( '?' > _query );
+        _absolute_uri    = _scheme() > ':' > _hier_part > -( '?' > _query() );
 
         // relative-ref  =  relative-part    [  "?"     query ]    [  "#"     fragment ]
-        _relative_ref    = _relative_part > -( '?' > _query ) > -( '#' > _fragment );
+        _relative_ref    = _relative_part > -( '?' > _query() ) > -( '#' > _fragment() );
 
         // relative-part = "//"     authority     path-abempty
         //               /  path-absolute
@@ -89,24 +94,10 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
                          | _path.noscheme()
                          | _path.empty();
 
-        // scheme        = ALPHA           *( ALPHA        /  DIGIT       / "+" / "-" / "." )
-        _scheme          = ascii::alpha >> *( ascii::alpha | ascii::digit | ascii::char_("+-.") );
-
         // authority     = [  userinfo    "@" ]    host    [  ":"   port ]
-//            _authority       = -(_userinfo >> '@') >> _host >> -( ':' >> _port );
-        _authority       = -(_userinfo >> '@') >> _host() >> -( ':' >> _port );
+//        _authority       = -( _userinfo >> '@' ) >> _host >> -( ':' >> _port );
+        _authority       = -( _userinfo() >> '@' ) >> _host() >> -( ':' >> _port() );
 
-        // userinfo      = *(  unreserved /  pct-encoded /  sub-delims / ":" )
-        _userinfo        = *( _char.unreserved() | _char.percent_encoded() | _char.sub_delims() | ascii::char_(':') );
-
-        // port          = *DIGIT
-        _port            = *ascii::digit;
-
-        // query         = *(  pchar / "/" / "?" )
-        _query           = *( _char.pchar() | ascii::char_("/?") );
-
-        // fragment      = *(  pchar / "/" / "?" )
-        _fragment        = *( _char.pchar() | ascii::char_("/?") );
 
 
 
@@ -131,13 +122,13 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
         BOOST_SPIRIT_DEBUG_NODE(_authority);
         _path.enable_debug();
 //            BOOST_SPIRIT_DEBUG_NODE(_uri_reference);
-        BOOST_SPIRIT_DEBUG_NODE(_scheme);
+        _scheme.enable_debug();
 //            BOOST_SPIRIT_DEBUG_NODE(_authority);
-        BOOST_SPIRIT_DEBUG_NODE(_userinfo);
+        _userinfo.enable_debug();
         _host.enable_debug();
-        BOOST_SPIRIT_DEBUG_NODE(_port);
-        BOOST_SPIRIT_DEBUG_NODE(_query);
-        BOOST_SPIRIT_DEBUG_NODE(_fragment);
+        _port.enable_debug();
+        _query.enable_debug();
+        _fragment.enable_debug();
     }
 
 
@@ -150,15 +141,15 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
     qi::rule<Iterator> _absolute_uri;
     qi::rule<Iterator> _relative_ref;
     qi::rule<Iterator> _relative_part;
-    qi::rule<Iterator, std::string()> _scheme;
+    rules::scheme<Iterator>           _scheme;
     qi::rule<Iterator, std::tuple<std::string, std::string, std::string>()> _authority;
-    qi::rule<Iterator, std::string()> _userinfo;
-    rules::host<Iterator, std::string> _host;
-    qi::rule<Iterator, std::string()> _port;
+    rules::userinfo<Iterator>         _userinfo;
+    rules::host<Iterator>             _host;
+    rules::port<Iterator>             _port;
     rules::path<Iterator>             _path;
-    qi::rule<Iterator, std::string()> _query;
-    qi::rule<Iterator, std::string()> _fragment;
-    rules::character<Iterator> _char;
+    rules::query<Iterator>            _query;
+    rules::fragment<Iterator>         _fragment;
+    rules::character<Iterator>        _char;
 };
 
 }}} // namespace uri::parsers::grammar

@@ -12,9 +12,14 @@ target_sources(
         ${${target}_INCLUDE_DIR}/fusion/adapted_basic_uri.hpp
         ${${target}_INCLUDE_DIR}/parsers/grammars/grammar.hpp
         ${${target}_INCLUDE_DIR}/parsers/rules/character.hpp
+        ${${target}_INCLUDE_DIR}/parsers/rules/fragment.hpp
         ${${target}_INCLUDE_DIR}/parsers/rules/host.hpp
         ${${target}_INCLUDE_DIR}/parsers/rules/ip.hpp
         ${${target}_INCLUDE_DIR}/parsers/rules/path.hpp
+        ${${target}_INCLUDE_DIR}/parsers/rules/port.hpp
+        ${${target}_INCLUDE_DIR}/parsers/rules/query.hpp
+        ${${target}_INCLUDE_DIR}/parsers/rules/scheme.hpp
+        ${${target}_INCLUDE_DIR}/parsers/rules/userinfo.hpp
         ${${target}_INCLUDE_DIR}/percent/codec.hpp
         ${${target}_INCLUDE_DIR}/percent/code.hpp
         ${${target}_INCLUDE_DIR}/phoenix/adapted_basic_uri_accessor.hpp

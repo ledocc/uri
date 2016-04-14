@@ -3,33 +3,28 @@
 
 
 
+#include <string>
+
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_object.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_fusion.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/fusion/include/std_tuple.hpp>
 
 
-
-namespace phoenix = boost::phoenix;
-namespace fusion = boost::fusion;
-namespace spirit = boost::spirit;
-namespace ascii = boost::spirit::ascii;
-namespace qi = boost::spirit::qi;
 
 namespace uri { namespace parsers { namespace rules {
 
-
 template <typename Iterator>
-struct character
+class character
 {
-    using rule_char   = qi::rule<Iterator, char()>;
-    using rule_string = qi::rule<Iterator, std::string()>;
+public:
+    using rule_char   = boost::spirit::qi::rule<Iterator, char()>;
+    using rule_string = boost::spirit::qi::rule<Iterator, std::string()>;
 
+
+public:
     character()
     {
+        namespace ascii = boost::spirit::ascii;
+
+
         // pchar         =  unreserved /  pct-encoded /  sub-delims / ":" / "@"
         _pchar           = _unreserved | _pct_encoded | _sub_delims | ascii::char_(":@");
 
@@ -70,4 +65,4 @@ private:
 
 }}} // namespace uri::parsers::grammar
 
-#endif // uri__parsers__grammars__grammar_hpp
+#endif // uri__parsers__rules__character_hpp
