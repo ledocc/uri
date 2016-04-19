@@ -112,7 +112,19 @@ BOOST_FIXTURE_TEST_CASE(parse_complete_valid_uri, ParserFixture)
 
 BOOST_FIXTURE_TEST_CASE(parse_invalid_scheme, ParserFixture)
 {
-    _uriGrammer.enable_debug();
     BOOST_TEST( parse("http#://user:pass@www.google.com:8080/root/dir?query#fragment") == false );
+    BOOST_TEST_MESSAGE(_uri);
+}
+
+BOOST_FIXTURE_TEST_CASE(parse_mailto_scheme, ParserFixture)
+{
+    BOOST_TEST( parse("mailto:%22not%40me%22@example.org") == true );
+    BOOST_TEST_MESSAGE(_uri);
+}
+
+BOOST_FIXTURE_TEST_CASE(parse_mailto_scheme_path_query, ParserFixture)
+{
+    _uriGrammer.enable_debug();
+    BOOST_TEST( parse("mailto:user@example.org?subject=%3D%3Futf-8%3FQ%3Fcaf%3DC3%3DA9%3F%3D") == true );
     BOOST_TEST_MESSAGE(_uri);
 }
