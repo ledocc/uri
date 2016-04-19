@@ -31,6 +31,13 @@ public:
         _code[2] = code_[2];
     }
 
+    code(const char major, const char minor)
+    {
+        _code[0] = '%';
+        _code[1] = major;
+        _code[2] = minor;
+    }
+
     ///
     /// \brief operator [] to get a copy of a char
     /// \param index of the char to access

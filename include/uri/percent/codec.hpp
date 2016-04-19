@@ -38,6 +38,20 @@ private:
     array_type _array = array_type{ -1 };
 };
 
+char hexadecimal2Decimal(char c)
+{
+    static detail::Hexadecimal2Decimal hexadecimal2Decimal_;
+    return hexadecimal2Decimal_[c];
+}
+
+char decimal2Hexadecimal(char c)
+{
+    static std::array<char, 16> decimal2Hexadecimal_ = { '0', '1', '2', '3', '4', '5', '6', '7',
+                                                         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    return decimal2Hexadecimal_[c];
+}
+
+
 } // namespace detail
 
 
@@ -48,12 +62,40 @@ private:
 ///
 char decode(const code & code)
 {
-    static detail::Hexadecimal2Decimal hexadecimal2Decimal;
-
-    return (hexadecimal2Decimal[ code[1] ] << 4) +
-            hexadecimal2Decimal[ code[2] ];
-
+    return (detail::hexadecimal2Decimal( code[1] ) << 4) +
+            detail::hexadecimal2Decimal( code[2] );
 }
+
+
+template <typename IteratorT, typename OutputIterator>
+void decode(IteratorT begin, IteratorT end, OutputIterator output)
+{
+    auto it = begin;
+
+    while (it != end)
+    {
+        char c = *it; ++it;
+
+        if ('%' == c)
+        {
+            if (std::distance(it, end) < 2) { throw std::runtime_error("uri : percent code not complet"); }
+
+            char c1 = *(it++);
+            char c2 = *(it++);
+
+            c = decode( code(c1, c2) );
+        }
+
+        output = c;
+    }
+}
+
+
+
+
+
+
+
 
 ///
 /// \brief encode convert a char in its percent encoded representation
@@ -62,11 +104,38 @@ char decode(const code & code)
 ///
 void encode(char c, code & code)
 {
-    static std::array<char, 16> decimal2Hexadecimal = { '0', '1', '2', '3', '4', '5', '6', '7',
-                                                        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
     code[0] = '%';
-    code[1] = decimal2Hexadecimal[ c >> 4 ];
-    code[2] = decimal2Hexadecimal[ c & 0x0F ];
+    code[1] = detail::decimal2Hexadecimal( c >> 4 );
+    code[2] = detail::decimal2Hexadecimal( c & 0x0F );
+}
+
+template <typename OutputIterator>
+void encode(char c, OutputIterator & output)
+{
+    output = '%';
+    output = detail::decimal2Hexadecimal( c >> 4 );
+    output = detail::decimal2Hexadecimal( c & 0x0F );
+}
+
+
+template <typename IteratorT, typename OutputIterator, typename CharacterPolicy>
+void encode(IteratorT begin, IteratorT end, OutputIterator output, const CharacterPolicy & charPolicy)
+{
+    auto it = begin;
+
+    while (it != end)
+    {
+        char c = *it; ++it;
+
+        if (charPolicy.is_to_encode(c))
+        {
+            encode(c, output);
+        }
+        else
+        {
+            output = c;
+        }
+    }
 }
 
 }} // namespace uri::percent
