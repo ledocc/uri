@@ -25,13 +25,9 @@ public:
     {
         namespace ascii = boost::spirit::ascii;
 
-
         // userinfo      = *(  unreserved /  pct-encoded /  sub-delims / ":" )
         _userinfo        = *( _char.unreserved() | _char.percent_encoded() | _char.sub_delims() | ascii::char_(':') );
         _userinfo.name("userinfo");
-
-//        _userinfo        = _word >> ':' >> _word;
-//        _word            = *( _char.unreserved() | _char.percent_encoded() | _char.sub_delims() );
     }
 
     void enable_debug()
@@ -43,8 +39,6 @@ public:
 
 
 private:
-//    rule_type _userinfo;
-//    qi::rule<Iterator, std::string() > _word;
     rule_type _userinfo;
     rules::character<Iterator> _char;
 };

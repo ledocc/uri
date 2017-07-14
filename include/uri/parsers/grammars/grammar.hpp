@@ -48,7 +48,7 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
 
 
         // URI           =  scheme   ":"    hier-part   [  "?"    query ]   [  "#"    fragment ]
-//          _uri             = _scheme > ':' > _hier_part > -( '?' > _query ) > -( '#' > _fragment );
+//      _uri             = _scheme > ':' > _hier_part > -( '?' > _query ) > -( '#' > _fragment );
         _uri             = _scheme()[phoenix::scheme_(_val) = _1]
                          > ':' > _hier_part
                             [
@@ -95,7 +95,7 @@ struct grammar : boost::spirit::qi::grammar<Iterator, UriT()>
                          | _path.empty();
 
         // authority     = [  userinfo    "@" ]    host    [  ":"   port ]
-//        _authority       = -( _userinfo >> '@' ) >> _host >> -( ':' >> _port );
+//        _authority     = -( _userinfo >> '@' ) >> _host >> -( ':' >> _port );
         _authority       = -( _userinfo() >> '@' ) >> _host() >> -( ':' >> _port() );
 
 

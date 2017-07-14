@@ -8,7 +8,7 @@ struct host_tag {};
 struct port_tag {};
 struct userinfo_tag {};
 struct path_tag {};
-struct query {};
+struct query_tag {};
 struct fragment_tag {};
 
 }} // namespace uri::detail
