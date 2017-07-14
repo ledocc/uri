@@ -29,6 +29,25 @@ public:
 
 
 public:
+    basic_uri() = default;
+    basic_uri(const scheme_type   & scheme_,
+              const userinfo_type & userinfo_,
+              const host_type     & host_,
+              const port_type     & port_,
+              const path_type     & path_,
+              const query_type    & query_,
+              const fragment_type & fragment_)
+        : _scheme(scheme_),
+          _userinfo(userinfo_),
+          _host(host_),
+          _port(port_),
+          _path(path_),
+          _query(query_),
+          _fragment(fragment_)
+    {}
+
+
+    // Accessor
     const scheme_type &   scheme()   const { return _scheme;   }
     const userinfo_type & userinfo() const { return _userinfo; }
     const host_type &     host()     const { return _host;     }
@@ -37,6 +56,8 @@ public:
     const query_type &    query()    const { return _query;    }
     const fragment_type & fragment() const { return _fragment; }
 
+
+    // Modifier
     void scheme(  const scheme_type & scheme_)     { _scheme   = scheme_;   }
     void userinfo(const userinfo_type & userinfo_) { _userinfo = userinfo_; }
     void host(    const host_type & host_)         { _host     = host_;     }
