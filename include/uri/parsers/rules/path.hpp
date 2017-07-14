@@ -30,6 +30,7 @@ public:
                          | _path_noscheme
                          | _path_rootless
                          | _path_empty;
+        _path.name("path");
 
         // path-abempty  = *( "/"     segment )
         _path_abempty    = *( ascii::char_('/') > _segment );

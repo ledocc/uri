@@ -28,6 +28,7 @@ public:
 
         // fragment      = *(  pchar / "/" / "?" )
         _fragment        = *( _char.pchar() | ascii::char_("/?") );
+        _fragment.name("fragment");
     }
 
     void enable_debug()

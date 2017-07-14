@@ -29,6 +29,7 @@ public:
 
         // host          =  IP-literal /  IPv4address /  reg-name
         _host            = _IP_literal | _ip.v4()     | _reg_name;
+        _host.name("host");
 
         // IP-literal    = "["                  (  IPv6address /  IPvFuture    )   "]"
         _IP_literal      = ascii::char_('[') >> ( _ip.v6()     | _ip.vFuture() ) >> ascii::char_(']');

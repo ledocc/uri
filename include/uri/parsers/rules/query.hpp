@@ -28,6 +28,7 @@ public:
 
         // query         = *(  pchar / "/" / "?" )
         _query           = *( _char.pchar() | ascii::char_("/?") );
+        _query.name("query");
     }
 
     void enable_debug()

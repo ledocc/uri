@@ -28,6 +28,7 @@ public:
 
         // userinfo      = *(  unreserved /  pct-encoded /  sub-delims / ":" )
         _userinfo        = *( _char.unreserved() | _char.percent_encoded() | _char.sub_delims() | ascii::char_(':') );
+        _userinfo.name("userinfo");
 
 //        _userinfo        = _word >> ':' >> _word;
 //        _word            = *( _char.unreserved() | _char.percent_encoded() | _char.sub_delims() );
