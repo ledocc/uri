@@ -23,6 +23,7 @@ target_sources(
         ${${target}_INCLUDE_DIR}/percent/codec.hpp
         ${${target}_INCLUDE_DIR}/percent/code.hpp
         ${${target}_INCLUDE_DIR}/phoenix/adapted_basic_uri_accessor.hpp
+        ${${target}_INCLUDE_DIR}/algorithm.hpp
         ${${target}_INCLUDE_DIR}/basic_builder.hpp
         ${${target}_INCLUDE_DIR}/basic_parser.hpp
         ${${target}_INCLUDE_DIR}/basic_uri.hpp

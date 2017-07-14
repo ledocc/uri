@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(decode_char)
 
 BOOST_AUTO_TEST_CASE(decode_string)
 {
-    std::string encodedString("hello%20world%2c%20nice%20day%20%3F");
+    std::string encodedString("hello%20world%2C%20nice%20day%20%3F");
     std::string decodedString;
 
     uri::percent::decode(std::begin(encodedString), std::end(encodedString),
@@ -30,5 +30,17 @@ BOOST_AUTO_TEST_CASE(encode_char)
     BOOST_TEST(code[0] == '%');
     BOOST_TEST(code[1] == '2');
     BOOST_TEST(code[2] == '1');
+}
+
+BOOST_AUTO_TEST_CASE(encode_string)
+{
+    std::string decodedString("hello world, nice day ?");
+    std::string encodedString;
+
+    uri::percent::encode(std::begin(decodedString), std::end(decodedString),
+                         std::back_inserter(encodedString));
+
+    BOOST_TEST_MESSAGE(encodedString);
+    BOOST_TEST("hello%20world%2C%20nice%20day%20%3F" == encodedString);
 }
 

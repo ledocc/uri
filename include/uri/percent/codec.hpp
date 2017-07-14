@@ -9,7 +9,6 @@
 
 namespace uri { namespace percent {
 
-
 namespace detail {
 
 ///
@@ -35,7 +34,7 @@ public:
 
 
 private:
-    array_type _array = array_type{ -1 };
+    array_type _array = array_type{ {-1} };
 };
 
 char hexadecimal2Decimal(char c)
@@ -46,8 +45,8 @@ char hexadecimal2Decimal(char c)
 
 char decimal2Hexadecimal(char c)
 {
-    static std::array<char, 16> decimal2Hexadecimal_ = { '0', '1', '2', '3', '4', '5', '6', '7',
-                                                         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    static std::array<char, 16> decimal2Hexadecimal_ = { {'0', '1', '2', '3', '4', '5', '6', '7',
+                                                         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'} };
     return decimal2Hexadecimal_[c];
 }
 
@@ -90,11 +89,34 @@ void decode(IteratorT begin, IteratorT end, OutputIterator output)
     }
 }
 
+std::string encode(const std::string & input_)
+{
+    std::string result;
+    decode(std::begin(input_), std::end(input_), std::back_inserter(result));
+    return result;
+}
 
 
 
 
+namespace detail {
 
+struct UnreservedCharacterPolicy
+{
+    bool operator() (char c) const
+    {
+        return ! (   (('a' <= c) && (c <= 'z'))
+                  || (('A' <= c) && (c <= 'Z'))
+                  || (('0' <= c) && (c <= '9'))
+                  || (c == '-')
+                  || (c == '.')
+                  || (c == '_')
+                  || (c == '~')
+                 );
+    }
+};
+
+} // namespace detail
 
 
 ///
@@ -118,8 +140,9 @@ void encode(char c, OutputIterator & output)
 }
 
 
-template <typename IteratorT, typename OutputIterator, typename CharacterPolicy>
-void encode(IteratorT begin, IteratorT end, OutputIterator output, const CharacterPolicy & charPolicy)
+template <typename IteratorT, typename OutputIterator, typename CharacterPolicy = detail::UnreservedCharacterPolicy>
+void encode(IteratorT begin, IteratorT end, OutputIterator output,
+            const CharacterPolicy & charPolicy = detail::UnreservedCharacterPolicy())
 {
     auto it = begin;
 
@@ -127,7 +150,7 @@ void encode(IteratorT begin, IteratorT end, OutputIterator output, const Charact
     {
         char c = *it; ++it;
 
-        if (charPolicy.is_to_encode(c))
+        if (charPolicy(c))
         {
             encode(c, output);
         }
@@ -136,6 +159,15 @@ void encode(IteratorT begin, IteratorT end, OutputIterator output, const Charact
             output = c;
         }
     }
+}
+
+template <typename CharacterPolicy = detail::UnreservedCharacterPolicy>
+std::string encode(const std::string & input_,
+                   const CharacterPolicy & charPolicy = detail::UnreservedCharacterPolicy())
+{
+    std::string result;
+    encode(std::begin(input_), std::end(input_), std::back_inserter(result), charPolicy);
+    return result;
 }
 
 }} // namespace uri::percent

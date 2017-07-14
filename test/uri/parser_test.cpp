@@ -26,8 +26,6 @@ public:
         _numeric = make_range('0', '9');
 
         _alnum = _alpha + _numeric;
-
-
     }
 
     const std::string & alphaLowerCase() const { return _alphaLowerCase; }
@@ -45,6 +43,8 @@ private:
         return result;
     }
 
+
+private:
     std::string _alphaLowerCase;
     std::string _alphaUpperCase;
     std::string _alpha;
@@ -107,7 +107,13 @@ public:
 BOOST_FIXTURE_TEST_CASE(parse_complete_valid_uri, ParserFixture)
 {
     BOOST_TEST( parse("http://user:pass@www.google.com:8080/root/dir?query#fragment") == true );
-    testComponents("http", "user:pass", "www.google.com", "8080", "/root/dir", "query", "fragment");
+    testComponents("http",
+                   "user:pass",
+                   "www.google.com",
+                   "8080",
+                   "/root/dir",
+                   "query",
+                   "fragment");
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_invalid_scheme, ParserFixture)
@@ -119,12 +125,37 @@ BOOST_FIXTURE_TEST_CASE(parse_invalid_scheme, ParserFixture)
 BOOST_FIXTURE_TEST_CASE(parse_mailto_scheme, ParserFixture)
 {
     BOOST_TEST( parse("mailto:%22not%40me%22@example.org") == true );
-    BOOST_TEST_MESSAGE(_uri);
+    testComponents("mailto",
+                   "",
+                   "",
+                   "",
+                   "%22not%40me%22@example.org",
+                   "",
+                   "");
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_mailto_scheme_path_query, ParserFixture)
 {
     _uriGrammer.enable_debug();
     BOOST_TEST( parse("mailto:user@example.org?subject=%3D%3Futf-8%3FQ%3Fcaf%3DC3%3DA9%3F%3D") == true );
-    BOOST_TEST_MESSAGE(_uri);
+    testComponents("mailto",
+                   "",
+                   "",
+                   "",
+                   "user@example.org",
+                   "subject=%3D%3Futf-8%3FQ%3Fcaf%3DC3%3DA9%3F%3D",
+                   "");
+}
+
+BOOST_FIXTURE_TEST_CASE(parse_urn_schem, ParserFixture)
+{
+    _uriGrammer.enable_debug();
+    BOOST_TEST( parse("urn:example:animal:ferret:nose") == true );
+    testComponents("urn",
+                   "",
+                   "",
+                   "",
+                   "example:animal:ferret:nose",
+                   "",
+                   "");
 }
