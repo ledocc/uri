@@ -1,43 +1,45 @@
 #------------------------------------------------------------------------------
 # define minimum cmake version
 #------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.11)
+cmake_policy(VERSION 3.11)
 
 
-#------------------------------------------------------------------------------
-# define project name
-#------------------------------------------------------------------------------
-project(uri VERSION 0.1.0)
-string(TIMESTAMP http_BUILD_TIME "%Y-%m-%d %H:%M:%S UTC" UTC)
-
-
-#------------------------------------------------------------------------------
-# define policies
-#------------------------------------------------------------------------------
-
-
-#------------------------------------------------------------------------------
-# define CMake Module path
-#------------------------------------------------------------------------------
-set(
-    CMAKE_MODULE_PATH
-    ${CMAKE_HOME_DIRECTORY}/cmake
-    ${CMAKE_HOME_DIRECTORY}/cmake/cmut
-    ${CMAKE_MODULE_PATH}
+##--------------------------------------------------------------------------------------------------------------------##
+# define CMake module path
+##--------------------------------------------------------------------------------------------------------------------##
+set(CMUT_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/cmut")
+list(INSERT CMAKE_MODULE_PATH 0
+    "${CMAKE_CURRENT_LIST_DIR}/cmake"
+    "${CMUT_DIR}"
 )
 
-# cmake's module
-include(CMakePrintHelpers)
+include(cmut)
+include(cmut_get_git_info)
 
 
-# cmut's module
-include( cmut_define_output_dirs )
-include( cmut_define_install_dirs )
-include( cmut_get_git_info )
-include( cmut_install_functions )
-include( cmut_message )
-include( cmut_qmake_query )
-include( cmut_win32_use_mp_option )
+
+##--------------------------------------------------------------------------------------------------------------------##
+# define project name/version
+##--------------------------------------------------------------------------------------------------------------------##
+project(uri)
+cmut__config__print_info()
+cmut__config__log_project_begin()
+cmut__utils__set_project_version_from_file("${CMAKE_CURRENT_LIST_DIR}/version.txt")
+cmut__utils__get_build_time(${PROJECT_NAME}_BUILD_TIME)
+
+
+##--------------------------------------------------------------------------------------------------------------------##
+# define build options
+##--------------------------------------------------------------------------------------------------------------------##
+cmut__config__option_build_shared_libs(ON)
+include(CTest) # define BUILD_TESTING
+cmut__config__option_ccache(ON)
+cmut__config__option_clang_tidy(OFF)
+cmut__config__option_cppcheck(OFF)
+cmut__config__option_include_what_you_use(OFF)
+
+cmut__config__default_build_type(Release)
 
 
 #------------------------------------------------------------------------------
@@ -50,37 +52,37 @@ include(cmut_print_target_properties)
 
 set(URI_Boost_VERSION 1.60.0)
 find_package(Boost ${URI_Boost_VERSION} COMPONENTS atomic REQUIRED)
-cmut_print_target_interface_properties(Boost::boost)
+#cmut_print_target_interface_properties(Boost::boost)
 
 
-#------------------------------------------------------------------------------
+##--------------------------------------------------------------------------------------------------------------------##
 # define build policies
-#------------------------------------------------------------------------------
+##--------------------------------------------------------------------------------------------------------------------##
+
+set(CMAKE_DEBUG_POSTFIX "d")
 
 # define CMAKE_*_OUTPUT_DIRECTORY
-cmut_define_output_dirs()
-# add option to enable build with all cpu's core when use Visual Studio or nmake
-cmut_win32_use_mp_option()
+cmut__build__define_output_dir()
 
-# enable C++11
-include( cmut_enable_cxx11 )
+cmut__build__enable_color_with_ninja()
+
+# enable C++14
+cmut__build__enable_cxx_standard(14)
 
 # enable warning
-include( cmut_enable_warning )
+cmut__build__enable_warning(AGGRESSIVE)
 
 # use RUNPATH instead of depreciated RPATH
-include( cmut_enable_runpath )
+cmut__build__enable_runpath_link()
 
+cmut__build__set_cxx_visibility(hidden)
+
+# add option to enable build with all cpu's core when use Visual Studio or nmake
+cmut__build__msvc__option_use_mp()
 
 if (MSVC)
     add_definitions(-DUNICODE)
-#    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
-
-
-# add sqoolManager include directory for all target
-include_directories(${CMAKE_SOURCE_DIR}/include)
 
 
 #------------------------------------------------------------------------------
@@ -92,8 +94,25 @@ include(CTest)
 if(BUILD_TESTING)
     add_subdirectory(test)
 endif()
-#------------------------------------------------------------------------------
-# define uninstall policies
-#------------------------------------------------------------------------------
-include( cmut_define_uninstall_target )
 
+##--------------------------------------------------------------------------------------------------------------------##
+# define install policies
+##--------------------------------------------------------------------------------------------------------------------##
+
+cmut__install__install_config_and_version()
+cmut__install__install_config_directory(
+    DIRECTORY   "cmake/dependencies/find"
+    DESTINATION "dependencies/")
+
+cmut__install__add_install_component_targets(devel runtime)
+
+
+##--------------------------------------------------------------------------------------------------------------------##
+# define uninstall policies
+##--------------------------------------------------------------------------------------------------------------------##
+
+include(cmut_define_uninstall_target)
+#add_subdirectory(cmake/install)
+
+
+cmut__config__log_project_end()
