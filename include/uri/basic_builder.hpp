@@ -31,13 +31,13 @@ using query_t    = uri_component<detail::query_tag>;
 using fragment_t = uri_component<detail::fragment_tag>;
 
 
-scheme_t   scheme(const std::string & value)   { return scheme_t(value); }
-host_t     host(const std::string & value)     { return host_t(value); }
-port_t     port(const std::string & value)     { return port_t(value); }
-userinfo_t userinfo(const std::string & value) { return userinfo_t(value); }
-path_t     path(const std::string & value)     { return path_t(value); }
-query_t    query(const std::string & value)    { return query_t(value); }
-fragment_t fragment(const std::string & value) { return fragment_t(value); }
+inline scheme_t   scheme(const std::string & value)   { return scheme_t(value); }
+inline host_t     host(const std::string & value)     { return host_t(value); }
+inline port_t     port(const std::string & value)     { return port_t(value); }
+inline userinfo_t userinfo(const std::string & value) { return userinfo_t(value); }
+inline path_t     path(const std::string & value)     { return path_t(value); }
+inline query_t    query(const std::string & value)    { return query_t(value); }
+inline fragment_t fragment(const std::string & value) { return fragment_t(value); }
 
 
 template <typename ProtocolTag>
