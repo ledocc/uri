@@ -37,13 +37,13 @@ private:
     array_type _array = array_type{ {-1} };
 };
 
-char hexadecimal2Decimal(char c)
+inline char hexadecimal2Decimal(char c)
 {
     static detail::Hexadecimal2Decimal hexadecimal2Decimal_;
     return hexadecimal2Decimal_[c];
 }
 
-char decimal2Hexadecimal(char c)
+inline char decimal2Hexadecimal(char c)
 {
     static std::array<char, 16> decimal2Hexadecimal_ = { {'0', '1', '2', '3', '4', '5', '6', '7',
                                                          '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'} };
@@ -59,7 +59,7 @@ char decimal2Hexadecimal(char c)
 /// \param code the percent code to decode
 /// \return te decode char
 ///
-char decode(const code & code)
+inline char decode(const code & code)
 {
     return (detail::hexadecimal2Decimal( code[1] ) << 4) +
             detail::hexadecimal2Decimal( code[2] );
@@ -89,7 +89,7 @@ void decode(IteratorT begin, IteratorT end, OutputIterator output)
     }
 }
 
-std::string decode(const std::string & input_)
+inline std::string decode(const std::string & input_)
 {
     std::string result;
     decode(std::begin(input_), std::end(input_), std::back_inserter(result));
@@ -124,7 +124,7 @@ struct UnreservedCharacterPolicy
 /// \param c the char to encode
 /// \param code is the encoded representation of "c"
 ///
-void encode(char c, code & code)
+inline void encode(char c, code & code)
 {
     code[0] = '%';
     code[1] = detail::decimal2Hexadecimal( c >> 4 );
