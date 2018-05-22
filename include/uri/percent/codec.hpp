@@ -89,7 +89,7 @@ void decode(IteratorT begin, IteratorT end, OutputIterator output)
     }
 }
 
-std::string encode(const std::string & input_)
+std::string decode(const std::string & input_)
 {
     std::string result;
     decode(std::begin(input_), std::end(input_), std::back_inserter(result));
