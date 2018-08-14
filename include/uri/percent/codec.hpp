@@ -133,7 +133,7 @@ struct UnreservedCharacterPolicy
 inline void encode(char c, code & code)
 {
     code[0] = '%';
-    code[1] = detail::decimal2Hexadecimal( c >> 4 );
+    code[1] = detail::decimal2Hexadecimal( ( c >> 4 ) & 0x0F );
     code[2] = detail::decimal2Hexadecimal( c & 0x0F );
 }
 
@@ -141,7 +141,7 @@ template <typename OutputIterator>
 void encode(char c, OutputIterator & output)
 {
     output = '%';
-    output = detail::decimal2Hexadecimal( c >> 4 );
+    output = detail::decimal2Hexadecimal( ( c >> 4 ) & 0x0F );
     output = detail::decimal2Hexadecimal( c & 0x0F );
 }
 

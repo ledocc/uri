@@ -58,3 +58,11 @@ BOOST_AUTO_TEST_CASE(encode_string)
 
     BOOST_TEST("hello%20world%2C%20nice%20day%20%3F" == encodedString);
 }
+
+BOOST_AUTO_TEST_CASE(encode_string2)
+{
+    std::string decodedString("Présentation.pptx");
+    std::string encodedString = uri::percent::encode(decodedString);
+
+    BOOST_TEST("Pr%C3%A9sentation.pptx" == encodedString);
+}
