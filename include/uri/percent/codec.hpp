@@ -3,6 +3,12 @@
 
 
 
+#include <algorithm>
+#include <array>
+#include <iterator>
+#include <stdexcept>
+#include <string>
+
 #include <uri/percent/code.hpp>
 
 
