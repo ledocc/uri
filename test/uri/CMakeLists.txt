@@ -2,10 +2,16 @@
 
 link_libraries(uri)
 
-cmut_add_boost_tests(
-    unit
+set(TEST_SRC
     key_value_query.test.cpp
-    parser_test.cpp
-    percent_codec_test.cpp
-    uri_codec_test.cpp
-    )
+#    algorithm.test.cpp
+#    uri.test.cpp
+#    parser.test.cpp
+#    percent_codec.test.cpp
+#    uri_codec.test.cpp
+)
+
+#cmut__test__boost__add_tests("unit__uri" ${TEST_SRC})
+
+
+add_subdirectory(parsers)
