@@ -3,7 +3,7 @@
 
 
 
-#define BOOST_SPIRIT_DEBUG
+//#define BOOST_SPIRIT_DEBUG
 
 #include <string>
 
@@ -15,18 +15,12 @@
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/fusion/include/std_tuple.hpp>
 
-#include <uri/fusion/adapted_basic_uri.hpp>
-#include <uri/phoenix/adapted_basic_uri_accessor.hpp>
-#include <uri/basic_uri.hpp>
+#include <uri/fusion/uri/adapted_basic_uri.hpp>
+#include <uri/phoenix/uri/adapted_basic_uri_accessor.hpp>
+#include <uri/schemes/uri.hpp>
 #include <uri/ios.hpp>
 
 
-
-namespace phoenix = boost::phoenix;
-namespace fusion = boost::fusion;
-namespace spirit = boost::spirit;
-namespace ascii = boost::spirit::ascii;
-namespace qi = boost::spirit::qi;
 
 namespace uri {
 
@@ -42,19 +36,18 @@ public:
 
 
 public:
-    bool parse(const std::string & uriString)
+    uri_type operator() ( const std::string & uriString )
     {
-        typedef grammar<std::string::const_iterator, uri_type > uri_grammar;
-        uri_type uriParsed;
-        uri_grammar uriGrammer; // Our grammar
+        typedef boost::spirit::grammar< std::string::const_iterator, uri_type > uri_grammar;
+
+        uri_grammar uriGrammer;
         uriGrammer.enable_debug();
 
         std::string::const_iterator iter = uriString.begin();
         std::string::const_iterator end = uriString.end();
+
+        uri_type result;
         bool r = boost::spirit::qi::parse(iter, end, uriGrammer, uriParsed);
-
-
-        std::cout << "try to parse : \""<<uriString << "\""<< std::endl;
 
         if (r && iter == end)
         {
@@ -77,6 +70,33 @@ public:
     }
 };
 
+
+
+
+template <typename StringT, typename GrammarT, typename StorageT>
+class parser
+{
+private:
+    using string_type = StringT;
+    using string_const_iterator = decltype( std::cbegin( std::declval<string_type>() ) );
+
+
+public:
+
+    using string_iterator_range = boost::range::iterator_range< string_const_iterator >;
+    using
+
+    std::pair<bool, string_iterator_range>
+    operator() ( const StringT & string, const GrammarT & grammar, Storage & storage )
+    {
+        auto iter = std::cbegin( string );
+        auto end  = std::cend( string );
+
+        bool result = boost::spirit::qi::parse(iter, end, grammer, storage);
+
+        return { result, { iter, end } };
+    }
+};
 
 } // namespace uri
 

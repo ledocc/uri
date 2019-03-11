@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <uri/algorithm.hpp>
+#include <uri/schemes/uri/algorithm.hpp>
 #include <uri/ios.hpp>
 
 

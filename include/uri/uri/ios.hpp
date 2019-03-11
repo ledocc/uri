@@ -5,7 +5,7 @@
 
 #include <ostream>
 
-#include <uri/basic_uri.hpp>
+#include <uri/schemes/uri.hpp>
 
 
 

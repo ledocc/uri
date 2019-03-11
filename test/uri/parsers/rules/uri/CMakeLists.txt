@@ -1,6 +1,6 @@
 
 set(TEST_SRC
-#    character.test.cpp
+    character.test.cpp
 #    fragment.test.cpp
 #    host.test.cpp
 #    ip.test.cpp
@@ -11,4 +11,4 @@ set(TEST_SRC
 #    userinfo.test.cpp
 )
 
-#cmut__test__boost__add_tests("unit__uri__parsers__rules__uri" ${TEST_SRC})
+cmut__test__boost__add_tests("unit__uri__parsers__rules__uri" ${TEST_SRC})
