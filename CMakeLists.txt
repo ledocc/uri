@@ -1,81 +1,109 @@
 #------------------------------------------------------------------------------
 # define minimum cmake version
 #------------------------------------------------------------------------------
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13)
+cmake_policy(VERSION 3.13)
+
+
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/cmut/cmut.cmake" REQUIRED)
 
 
 #------------------------------------------------------------------------------
 # define project name
 #------------------------------------------------------------------------------
-project(uri VERSION 0.1.0)
+cmut__config__print_info()
+cmut__project__read_version_file( version "${CMAKE_CURRENT_LIST_DIR}/version.txt" )
+
+project( uri VERSION ${version} )
+cmut__config__log_project_begin()
+
 string(TIMESTAMP http_BUILD_TIME "%Y-%m-%d %H:%M:%S UTC" UTC)
 
 
 #------------------------------------------------------------------------------
-# define policies
+# define option
 #------------------------------------------------------------------------------
 
-
-#------------------------------------------------------------------------------
-# define CMake Module path
-#------------------------------------------------------------------------------
-set(
-    CMAKE_MODULE_PATH
-    ${CMAKE_HOME_DIRECTORY}/cmake
-    ${CMAKE_HOME_DIRECTORY}/cmake/cmut
-    ${CMAKE_MODULE_PATH}
-)
-
-# cmake's module
-include(CMakePrintHelpers)
+cmut__config__option_build_shared_libs( ON )
+option(BUILD_DEPENDENCIES "use conan to install/build dependencies" OFF)
+option(URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE "Include \"conan_paths.cmake\" generated in binary directory by used with conan." OFF)
 
 
-# cmut's module
-include( cmut_define_output_dirs )
-include( cmut_define_install_dirs )
-include( cmut_get_git_info )
-include( cmut_install_functions )
-include( cmut_message )
-include( cmut_qmake_query )
-include( cmut_win32_use_mp_option )
+##--------------------------------------------------------------------------------------------------------------------##
+# install dependencies
+##--------------------------------------------------------------------------------------------------------------------##
+if(BUILD_DEPENDENCIES)
+#    cmut__lang__set_if_not_defined(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD 14)
+
+    cmut__conan__download_cmake_conan()
+    include(${CMAKE_BINARY_DIR}/conan.cmake)
+    conan_check(VERSION 1.0.0 REQUIRED)
+
+    if(BUILD_SHARED_LIBS)
+        set(CONAN_CMAKE_RUN__OPTIONS OPTIONS "*:shared=True")
+    else()
+        set(CONAN_CMAKE_RUN__OPTIONS OPTIONS "*:shared=False")
+    endif()
+
+    if(DEFINED CMAKE_CXX_STANDARD)
+        set(CONAN_CMAKE_RUN__SETTINGS SETTINGS "cppstd=${CMAKE_CXX_STANDARD}")
+    endif()
+
+
+    conan_cmake_run(
+        CONANFILE conanfile.py
+        BUILD missing
+        ${CONAN_CMAKE_RUN__SETTINGS}
+        ${CONAN_CMAKE_RUN__OPTIONS}
+        )
+endif()
+if( BUILD_DEPENDENCIES OR CONAN_EXPORTED OR URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
+    if(CONAN_EXPORTED OR URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
+        cmut__conan__capture_cxx_standard()
+    endif()
+    include( "${CMAKE_BINARY_DIR}/conan_paths.cmake" )
+endif()
 
 
 #------------------------------------------------------------------------------
 # find dependencies
 #------------------------------------------------------------------------------
-find_package(Threads)
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/dependencies/include_all.cmake")
 
-include(cmut_print_target_properties)
-
-
-set(URI_Boost_VERSION 1.60.0)
-find_package(Boost ${URI_Boost_VERSION} COMPONENTS atomic REQUIRED)
-cmut_print_target_interface_properties(Boost::boost)
+#include(cmut_print_target_properties)
+#cmut_print_target_interface_properties(Boost::boost)
 
 
 #------------------------------------------------------------------------------
 # define build policies
 #------------------------------------------------------------------------------
 
-# define CMAKE_*_OUTPUT_DIRECTORY
-cmut_define_output_dirs()
-# add option to enable build with all cpu's core when use Visual Studio or nmake
-cmut_win32_use_mp_option()
+set(CMAKE_DEBUG_POSTFIX "d")
 
-# enable C++11
-include( cmut_enable_cxx11 )
+# define CMAKE_*_OUTPUT_DIRECTORY
+cmut__build__define_output_dir()
+
+# add option to enable build with all cpu's core when use Visual Studio or nmake
+cmut__build__msvc__option_use_mp()
+
+# enable C++14
+#cmut__build__enable_cxx_standard(14)
 
 # enable warning
-include( cmut_enable_warning )
+cmut__build__enable_warning(AGGRESSIVE)
 
 # use RUNPATH instead of depreciated RPATH
-include( cmut_enable_runpath )
+cmut__build__enable_runpath_link()
 
+cmut__build__set_cxx_visibility(hidden)
 
 if (MSVC)
     add_definitions(-DUNICODE)
-#    add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
+if (MSVC)
+    add_definitions(-DUNICODE)
 endif()
 
 
@@ -95,5 +123,6 @@ endif()
 #------------------------------------------------------------------------------
 # define uninstall policies
 #------------------------------------------------------------------------------
-include( cmut_define_uninstall_target )
+#include( cmut_define_uninstall_target )
 
+cmut__config__log_project_end()

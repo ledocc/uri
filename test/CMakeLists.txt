@@ -1,8 +1,4 @@
 
-include(cmut_boost_test)
-
-cmut_test__find_boost_test(${URI_Boost_VERSION})
-
-cmut_define_output_dirs(".")
+cmut__test__boost__find_required_components(1.64.0)
 
 add_subdirectory(uri)
