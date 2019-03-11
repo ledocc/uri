@@ -11,9 +11,12 @@
 
 #include <uri/percent/code.hpp>
 
+#include <algorithm>
 
 
-namespace uri { namespace percent {
+
+namespace uri {
+namespace percent {
 
 namespace detail {
 
@@ -22,38 +25,45 @@ namespace detail {
 ///
 class Hexadecimal2Decimal
 {
-    using array_type = std::array<char, 255>;
+    using array_type = std::array< char, 255 >;
 
 public:
     Hexadecimal2Decimal()
     {
         char v = 0;
-        std::generate(_array.begin()+'0', _array.begin()+'9'+1, [&v]() { return v++; });
+        std::generate( _array.begin() + static_cast< std::size_t >( '0' ),
+                       _array.begin() + static_cast< std::size_t >( '9' ) + 1,
+                       [&v]() { return v++; } );
 
         v = 10;
-        std::generate(_array.begin()+'A', _array.begin()+'G', [&v]() { return v++; });
+        std::generate( _array.begin() + static_cast< std::size_t >( 'A' ),
+                       _array.begin() + static_cast< std::size_t >( 'G' ),
+                       [&v]() { return v++; } );
 
         v = 10;
-        std::generate(_array.begin()+'a', _array.begin()+'g', [&v]() { return v++; });
+        std::generate( _array.begin() + static_cast< std::size_t >( 'a' ),
+                       _array.begin() + static_cast< std::size_t >( 'g' ),
+                       [&v]() { return v++; } );
     }
-    char operator[] (unsigned int index) const { return _array[index]; }
+    char operator[]( std::size_t index ) const { return _array[index]; }
 
 
 private:
-    array_type _array = array_type{ {-1} };
+    array_type _array = array_type{ { -1 } };
 };
 
 inline char hexadecimal2Decimal(char c)
 {
-    static detail::Hexadecimal2Decimal hexadecimal2Decimal_;
-    return hexadecimal2Decimal_[c];
+    static detail::Hexadecimal2Decimal s_hexadecimal2Decimal;
+    return s_hexadecimal2Decimal[static_cast< std::size_t >( c )];
 }
 
 inline char decimal2Hexadecimal(char c)
 {
-    static std::array<char, 16> decimal2Hexadecimal_ = { {'0', '1', '2', '3', '4', '5', '6', '7',
-                                                         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'} };
-    return decimal2Hexadecimal_[c];
+    static std::array< char, 16 > decimal2Hexadecimal_ = {
+        { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' }
+    };
+    return decimal2Hexadecimal_[static_cast< std::size_t >( c )];
 }
 
 
@@ -67,28 +77,28 @@ inline char decimal2Hexadecimal(char c)
 ///
 inline char decode(const code & code)
 {
-    return (detail::hexadecimal2Decimal( code[1] ) << 4) +
-            detail::hexadecimal2Decimal( code[2] );
+    return static_cast< char >( detail::hexadecimal2Decimal( code[1] ) << 4 ) + detail::hexadecimal2Decimal( code[2] );
 }
 
 
-template <typename IteratorT, typename OutputIterator>
-void decode(IteratorT begin, IteratorT end, OutputIterator output)
+template < typename IteratorT, typename OutputIterator >
+void decode( IteratorT begin, IteratorT end, OutputIterator output )
 {
     auto it = begin;
 
-    while (it != end)
+    while ( it != end )
     {
-        char c = *it; ++it;
+        char c = *it;
+        ++it;
 
-        if ('%' == c)
+        if ( '%' == c )
         {
-            if (std::distance(it, end) < 2) { throw std::runtime_error("uri : percent code not complet"); }
+            if ( std::distance( it, end ) < 2 ) { throw std::runtime_error( "uri : percent code not complet" ); }
 
-            char c1 = *(it++);
-            char c2 = *(it++);
+            char c1 = *( it++ );
+            char c2 = *( it++ );
 
-            c = decode( code(c1, c2) );
+            c = decode( code( c1, c2 ) );
         }
 
         output = c;
@@ -98,10 +108,9 @@ void decode(IteratorT begin, IteratorT end, OutputIterator output)
 inline std::string decode(const std::string & input_)
 {
     std::string result;
-    decode(std::begin(input_), std::end(input_), std::back_inserter(result));
+    decode( std::begin( input_ ), std::end( input_ ), std::back_inserter( result ) );
     return result;
 }
-
 
 
 
@@ -109,16 +118,10 @@ namespace detail {
 
 struct UnreservedCharacterPolicy
 {
-    bool operator() (char c) const
+    bool operator()( char c ) const
     {
-        return ! (   (('a' <= c) && (c <= 'z'))
-                  || (('A' <= c) && (c <= 'Z'))
-                  || (('0' <= c) && (c <= '9'))
-                  || (c == '-')
-                  || (c == '.')
-                  || (c == '_')
-                  || (c == '~')
-                 );
+        return !( ( ( 'a' <= c ) && ( c <= 'z' ) ) || ( ( 'A' <= c ) && ( c <= 'Z' ) )
+                  || ( ( '0' <= c ) && ( c <= '9' ) ) || ( c == '-' ) || ( c == '.' ) || ( c == '_' ) || ( c == '~' ) );
     }
 };
 
@@ -137,8 +140,8 @@ inline void encode(char c, code & code)
     code[2] = detail::decimal2Hexadecimal( c & 0x0F );
 }
 
-template <typename OutputIterator>
-void encode(char c, OutputIterator & output)
+template < typename OutputIterator >
+void encode( char c, OutputIterator & output )
 {
     output = '%';
     output = detail::decimal2Hexadecimal( ( c >> 4 ) & 0x0F );
@@ -146,20 +149,20 @@ void encode(char c, OutputIterator & output)
 }
 
 
-template <typename IteratorT, typename OutputIterator, typename CharacterPolicy = detail::UnreservedCharacterPolicy>
-void encode(IteratorT begin, IteratorT end, OutputIterator output,
-            const CharacterPolicy & charPolicy = detail::UnreservedCharacterPolicy())
+template < typename IteratorT, typename OutputIterator, typename CharacterPolicy = detail::UnreservedCharacterPolicy >
+void encode( IteratorT               begin,
+             IteratorT               end,
+             OutputIterator          output,
+             const CharacterPolicy & charPolicy = detail::UnreservedCharacterPolicy() )
 {
     auto it = begin;
 
-    while (it != end)
+    while ( it != end )
     {
-        char c = *it; ++it;
+        char c = *it;
+        ++it;
 
-        if (charPolicy(c))
-        {
-            encode(c, output);
-        }
+        if ( charPolicy( c ) ) { encode( c, output ); }
         else
         {
             output = c;
@@ -167,15 +170,16 @@ void encode(IteratorT begin, IteratorT end, OutputIterator output,
     }
 }
 
-template <typename CharacterPolicy = detail::UnreservedCharacterPolicy>
-std::string encode(const std::string & input_,
-                   const CharacterPolicy & charPolicy = detail::UnreservedCharacterPolicy())
+template < typename CharacterPolicy = detail::UnreservedCharacterPolicy >
+std::string encode( const std::string &     input_,
+                    const CharacterPolicy & charPolicy = detail::UnreservedCharacterPolicy() )
 {
     std::string result;
-    encode(std::begin(input_), std::end(input_), std::back_inserter(result), charPolicy);
+    encode( std::begin( input_ ), std::end( input_ ), std::back_inserter( result ), charPolicy );
     return result;
 }
 
-}} // namespace uri::percent
+} // namespace percent
+} // namespace uri
 
 #endif // uri__percent__codec_h

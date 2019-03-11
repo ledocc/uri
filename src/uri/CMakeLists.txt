@@ -6,7 +6,7 @@ cmut__project__setup_library( ${target} CXX_FEATURES cxx_std_11 )
 
 
 set(${target}_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/${target})
-set(${target}_INCLUDE_DIR ../..//include/${target})
+
 target_sources(
     ${target}
     INTERFACE
@@ -42,8 +42,8 @@ target_sources(
 #        ${${target}_INCLUDE_DIR}/schemes/http.hpp
 #        ${${target}_INCLUDE_DIR}/schemes/mailto.hpp
 
-        ${${target}_RELATIVE_INCLUDE_DIR}/io.hpp
-        ${${target}_RELATIVE_INCLUDE_DIR}/uri.hpp
+#        ${${target}_INCLUDE_DIR}/io.hpp
+#        ${${target}_INCLUDE_DIR}/uri.hpp
 )
 
 target_link_libraries(

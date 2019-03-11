@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include <uri/basic_uri.hpp>
+#include <uri/schemes/uri.hpp>
 #include <uri/detail/tags.hpp>
 
 
