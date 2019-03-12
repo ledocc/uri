@@ -1,9 +1,9 @@
 
 set(TEST_SRC
     character.test.cpp
-#    fragment.test.cpp
-#    host.test.cpp
-#    ip.test.cpp
+    fragment.test.cpp
+    host.test.cpp
+    ip.test.cpp
 #    path.test.cpp
 #    port.test.cpp
 #    query.test.cpp
