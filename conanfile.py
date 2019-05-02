@@ -7,14 +7,15 @@ import platform
 
 class UriConan(ConanFile):
     name = "uri"
-    version = "0.1.0"
+    version = "0.3.99"
     author = "David Callu (callu.david at gmail.com)"
     license = "Boost Software License - Version 1.0"
     url = "https://github.com/ledocc/uri"
     description = "uri parser/generator library"
-    settings = "os", "compiler", "build_type", "arch", "cppstd"
+    topics = ("<Put some tag here>", "<here>", "<and here>")
+    settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
-    default_options = dict( { "shared":True, "*:shared":True } )
+    default_options = dict( { "shared":False } )
 
 
     generators = "cmake_paths"
@@ -24,11 +25,11 @@ class UriConan(ConanFile):
         "revision": "auto",
         "submodule": "recursive"
     }
-#    build_requires = "cmake_installer/3.13.0@conan/stable"
-    requires = (("boost/1.69.0@conan/stable"))
+    build_requires = "cmake_installer/3.13.0@conan/stable"
+    requires = (("boost/1.70.0@conan/stable"))
 
     def configure(self):
-        if self.settings.cppstd in [ None, "98", "gnu98", "11", "gnu11" ]:
+        if self.settings.compiler.cppstd in [ None, "98", "gnu98", "11", "gnu11" ]:
             raise errors.ConanInvalidConfiguration("Library uri require C++ 14 or greater.")
 
     def build(self):
@@ -49,7 +50,7 @@ class UriConan(ConanFile):
         if platform.system() != "Windows":
             cmake.definitions["CMAKE_CXX_STANDARD"] = cmake.definitions["CONAN_CMAKE_CXX_STANDARD"]
             cmake.definitions["CMAKE_CXX_EXTENSIONS"] = cmake.definitions["CONAN_CMAKE_CXX_EXTENSIONS"]
-            cmake.definitions["CTEST_TEST_TIMEOUT"] = 3000
+        cmake.definitions["CTEST_TEST_TIMEOUT"] = 3000
         cmake.configure()
 
         return cmake
