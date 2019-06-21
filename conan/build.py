@@ -1,13 +1,26 @@
 from cpt.packager import ConanMultiPackager
-
+import os
 
 if __name__ == "__main__":
-    builder = ConanMultiPackager()
+
+    def get_package_version():
+        version_file_path = os.path.realpath( os.path.join( os.path.dirname( os.path.realpath( __file__ ) ) , "..", "version.txt" ) )
+        with open( version_file_path, mode='r' ) as f:
+            return f.readline()
+
+    builder = ConanMultiPackager(
+        username='ledocc',
+        login_username='ledocc',
+        upload="https://api.bintray.com/conan/ledocc/public-conan",
+        reference="uri/"+get_package_version(),
+        stable_branch_pattern="master",
+        channel="testing"
+        )
     builder.add_common_builds()
 
     filtered_items = []
     for settings, options, env_vars, build_requires, reference in builder.items:
-        settings["cppstd"] = "14"
+        settings["compiler.cppstd"] = "14"
         if settings["compiler"] == "gcc":
             settings["compiler.libcxx"] = "libstdc++11"
         elif ( settings["compiler"] == "clang" ):
