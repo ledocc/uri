@@ -14,7 +14,7 @@ def get_package_version():
 
 class UriConan(ConanFile):
     name = "uri"
-    version = get_package_version()
+    version = tools.load("version.txt")
     author = "David Callu (callu.david at gmail.com)"
     license = "Boost Software License - Version 1.0"
     url = "https://github.com/ledocc/uri"
