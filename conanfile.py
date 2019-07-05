@@ -28,7 +28,7 @@ class UriConan(ConanFile):
     generators = "cmake_paths"
     scm = {
         "type": "git",
-        "url": "auto",
+        "url": "https://github.com/ledocc/uri",
         "revision": "auto",
         "submodule": "recursive"
     }
