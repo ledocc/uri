@@ -17,7 +17,7 @@ cmut__project__read_version_file( version "${CMAKE_CURRENT_LIST_DIR}/version.txt
 project( uri VERSION ${version} )
 cmut__config__log_project_begin()
 
-cmut__utils__get_build_time(${PROJECT_NAME}_BUILD_TIME)
+cmut__project__get_build_time(${PROJECT_NAME}_BUILD_TIME)
 
 
 #------------------------------------------------------------------------------
