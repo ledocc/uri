@@ -1,8 +1,7 @@
-from conans import ConanFile, CMake, tools, errors
+from conans import ConanFile, CMake, tools, errors, RunEnvironment
 from conans.client.build.cppstd_flags import cppstd_from_settings, cppstd_default
 
 import os
-import platform
 
 
 def get_package_version():
@@ -25,14 +24,15 @@ class UriConan(ConanFile):
     default_options = dict( { "shared":False } )
     exports = "version.txt"
 
-    generators = "cmake_paths"
+    generators = ("cmake_paths","virtualrunenv")
     scm = {
         "type": "git",
         "url": "https://github.com/ledocc/uri",
         "revision": "auto",
         "submodule": "recursive"
     }
-    build_requires = "cmake_installer/3.14.5@conan/stable"
+    build_requires = (("cmake_installer/3.14.5@conan/stable"),
+                      ("ninja_installer/1.9.0@bincrafters/stable" ))
     requires = (("boost/1.70.0@conan/stable"))
 
     def configure(self):
@@ -46,7 +46,16 @@ class UriConan(ConanFile):
     def build(self):
         cmake = self._configure_cmake()
         cmake.build()
-        cmake.test(output_on_failure=True)
+        env_test = {
+            "CTEST_TEST_TIMEOUT": "3000",
+            "BOOST_TEST_BUILD_INFO": "1",
+            "BOOST_TEST_LOG_LEVEL": "message",
+            "BOOST_TEST_RANDOM": "1"
+        }
+        env_build = RunEnvironment(self).vars
+        with tools.environment_append(env_build):
+            with tools.environment_append(env_test):
+                cmake.test(output_on_failure=True)
 
     def package(self):
         cmake = self._configure_cmake()
@@ -58,10 +67,10 @@ class UriConan(ConanFile):
     def _configure_cmake(self):
         cmake = CMake(self, set_cmake_flags=True)
         cmake.verbose=True
-        if platform.system() != "Windows":
-            cmake.definitions["CMAKE_CXX_STANDARD"] = cmake.definitions["CONAN_CMAKE_CXX_STANDARD"]
-            cmake.definitions["CMAKE_CXX_EXTENSIONS"] = cmake.definitions["CONAN_CMAKE_CXX_EXTENSIONS"]
+        cmake.generator="Ninja"
+
         cmake.definitions["CTEST_TEST_TIMEOUT"] = 3000
+        cmake.definitions["Boost_USE_STATIC_LIBS"] = "FALSE" if self.options["boost"].shared else "TRUE"
         cmake.configure()
 
         return cmake
