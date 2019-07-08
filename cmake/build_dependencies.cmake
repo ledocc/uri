@@ -2,7 +2,7 @@
 
 
 option(BUILD_DEPENDENCIES "use conan to install/build dependencies" OFF)
-option(ADESS__FORCE_INCLUDE_CONAN_PATHS_CMAKE "Include \"conan_paths.cmake\" generated in binary directory by used with conan." OFF)
+option(URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE "Include \"conan_paths.cmake\" generated in binary directory by used with conan." OFF)
 
 
 if(BUILD_DEPENDENCIES)
@@ -23,8 +23,8 @@ if(BUILD_DEPENDENCIES)
         )
 endif()
 
-if( BUILD_DEPENDENCIES OR CONAN_EXPORTED OR ADESS__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
-    if(CONAN_EXPORTED OR ADESS__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
+if( BUILD_DEPENDENCIES OR CONAN_EXPORTED OR URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
+    if(CONAN_EXPORTED OR URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
         cmut__conan__capture_cxx_standard()
     endif()
     include( "${CMAKE_BINARY_DIR}/conan_paths.cmake" )
