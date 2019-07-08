@@ -69,7 +69,6 @@ class UriConan(ConanFile):
         cmake.verbose=True
         cmake.generator="Ninja"
 
-        cmake.definitions["CTEST_TEST_TIMEOUT"] = 3000
         cmake.definitions["Boost_USE_STATIC_LIBS"] = "FALSE" if self.options["boost"].shared else "TRUE"
         cmake.configure()
 
