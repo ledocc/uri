@@ -40,7 +40,7 @@ cmut__config__default_build_type(Release)
 ##--------------------------------------------------------------------------------------------------------------------##
 # install dependencies
 ##--------------------------------------------------------------------------------------------------------------------##
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/build_dependencies.cmake")
+cmut__dependency__build_with_conan(DEFAULT_CXX_STANDARD 14)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/find_dependencies.cmake")
 
 
