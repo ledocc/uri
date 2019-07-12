@@ -24,7 +24,7 @@ class UriConan(ConanFile):
     default_options = dict( { "shared":False } )
     exports = "version.txt"
 
-    generators = ("cmake_paths","virtualrunenv")
+    generators = ("cmake","cmake_paths","virtualrunenv")
     scm = {
         "type": "git",
         "url": "https://github.com/ledocc/uri",
