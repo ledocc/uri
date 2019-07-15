@@ -4,42 +4,60 @@
 
 
 #include <uri/basic_uri.hpp>
-#include <uri/percent/codec.hpp>
+#include <uri/error.hpp>
+#include <uri/parsers/grammars/uri/grammar.hpp>
+#include <uri/traits.hpp>
 
+#include <boost/spirit/include/qi_parse.hpp>
+
+#include <ciso646>
 
 
 namespace uri {
 
-template < typename ProtocolTag >
-basic_uri<ProtocolTag> encode(const basic_uri<ProtocolTag> & uri_ )
+template < typename ProtocolTag, typename StringT, typename StringIteratorT = typename StringT::const_iterator >
+basic_uri< ProtocolTag > parse( const StringT & encoded_string, std::error_code & ec, StringIteratorT & last_position )
 {
-    basic_uri<ProtocolTag> result;
+    basic_uri< ProtocolTag >                                        uri;
+    parsers::grammars::uri::grammar< StringIteratorT, ProtocolTag > grammar;
+    grammar.enable_debug();
 
-    result.scheme(                    uri_.scheme() );
-    result.userinfo(  percent::encode(uri_.userinfo()) );
-    result.host(      percent::encode(uri_.host()) );
-    result.port(                      uri_.port() );
-    result.path(      percent::encode(uri_.path()) );
-    result.query(     percent::encode(uri_.query()) );
-    result.fragment(  percent::encode(uri_.fragment()) );
+    ec.clear();
 
-    return result;
+
+    auto iter = std::begin( encoded_string );
+    auto end  = std::end( encoded_string );
+
+    bool result   = boost::spirit::qi::parse( iter, end, grammar >> boost::spirit::qi::eoi, uri );
+    last_position = iter;
+
+    if ( not result )
+    {
+        ec = make_error_code( error::ParserFailed );
+        return basic_uri< ProtocolTag >{};
+    }
+
+    if ( iter != end )
+    {
+        ec = make_error_code( error::ParserFinishBeforeEndOfUri );
+        return basic_uri< ProtocolTag >{};
+    }
+
+    return uri;
 }
 
-template < typename ProtocolTag >
-basic_uri<ProtocolTag> decode(const basic_uri<ProtocolTag> & uri_ )
+//--------------------------------------------------------------------------------------------------------------------//
+
+template < typename ProtocolTag, typename StringT >
+basic_uri< ProtocolTag > parse( const StringT & encoded_string )
 {
-    basic_uri<ProtocolTag> result;
+    std::error_code                  ec;
+    typename StringT::const_iterator last_position;
 
-    result.scheme(                    uri_.scheme() );
-    result.userinfo(  percent::decode(uri_.userinfo()) );
-    result.host(      percent::decode(uri_.host()) );
-    result.port(                      uri_.port() );
-    result.path(      percent::decode(uri_.path()) );
-    result.query(     percent::decode(uri_.query()) );
-    result.fragment(  percent::decode(uri_.fragment()) );
+    auto uri = parse< ProtocolTag >( encoded_string, ec, last_position );
 
-    return result;
+    if ( ec ) { throw std::system_error( ec ); }
+    return uri;
 }
 
 } // namespace uri

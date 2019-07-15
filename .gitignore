@@ -1,0 +1,3 @@
+
+*.pyc
+conan/test_package/build

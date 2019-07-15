@@ -7,7 +7,8 @@
 
 
 
-namespace uri { namespace percent {
+namespace uri {
+namespace percent {
 
 ///
 /// \brief The code class is 3 char that is the hexa decimal code of a char
@@ -18,20 +19,22 @@ public:
     ///
     /// \brief default constructor initialise the 3 value to 0
     ///
-    code() : _code{0} {}
+    code()
+        : _code{ 0 }
+    {}
 
     ///
     /// \brief code constructor from char*
     /// \param code_ the source used to initialize the 3 char store in code
     /// \pre code_ should have a size >= 3
-    code(const char * code_)
+    code( const char * code_ )
     {
         _code[0] = code_[0];
         _code[1] = code_[1];
         _code[2] = code_[2];
     }
 
-    code(const char major, const char minor)
+    code( const char major, const char minor )
     {
         _code[0] = '%';
         _code[1] = major;
@@ -43,20 +46,21 @@ public:
     /// \param index of the char to access
     /// \return a copy of the char with index = "index"
     ///
-    char   operator[] (unsigned int index) const { return _code[index]; }
+    char operator[]( std::size_t index ) const { return _code[index]; }
 
     ///
     /// \brief operator [] to get a reference to a char
     /// \param index of the char to access
     /// \return a reference of the char with index = "index"
     ///
-    char & operator[] (unsigned int index)       { return _code[index]; }
+    char & operator[]( std::size_t index ) { return _code[index]; }
 
 
 private:
-    std::array<char, 3> _code;
+    std::array< char, 3 > _code;
 };
 
-}} // namespace uri::percent
+} // namespace percent
+} // namespace uri
 
 #endif // uri__percent__code_h
