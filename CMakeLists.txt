@@ -17,7 +17,7 @@ cmut__project__read_version_file( version "${CMAKE_CURRENT_LIST_DIR}/version.txt
 project( uri VERSION ${version} )
 cmut__config__log_project_begin()
 
-cmut__utils__get_build_time(${PROJECT_NAME}_BUILD_TIME)
+cmut__project__get_build_time(${PROJECT_NAME}_BUILD_TIME)
 
 
 #------------------------------------------------------------------------------
@@ -40,48 +40,8 @@ cmut__config__default_build_type(Release)
 ##--------------------------------------------------------------------------------------------------------------------##
 # install dependencies
 ##--------------------------------------------------------------------------------------------------------------------##
-if(BUILD_DEPENDENCIES)
-#    cmut__lang__set_if_not_defined(CMAKE_CXX_STANDARD 14)
-    set(CMAKE_CXX_STANDARD 14)
-
-    cmut__conan__download_cmake_conan()
-    include(${CMAKE_BINARY_DIR}/conan.cmake)
-    conan_check(VERSION 1.0.0 REQUIRED)
-
-    if(BUILD_SHARED_LIBS)
-        set(CONAN_CMAKE_RUN__OPTIONS OPTIONS "*:shared=True")
-    else()
-        set(CONAN_CMAKE_RUN__OPTIONS OPTIONS "*:shared=False")
-    endif()
-
-    if(DEFINED CMAKE_CXX_STANDARD)
-        set(CONAN_CMAKE_RUN__SETTINGS SETTINGS "cppstd=${CMAKE_CXX_STANDARD}")
-    endif()
-
-
-    conan_cmake_run(
-        CONANFILE conanfile.py
-        BUILD missing
-        ${CONAN_CMAKE_RUN__SETTINGS}
-        ${CONAN_CMAKE_RUN__OPTIONS}
-        )
-endif()
-if( BUILD_DEPENDENCIES OR CONAN_EXPORTED OR URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
-    if(CONAN_EXPORTED OR URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE)
-        cmut__conan__capture_cxx_standard()
-    endif()
-    include( "${CMAKE_BINARY_DIR}/conan_paths.cmake" )
-endif()
-
-
-
-#------------------------------------------------------------------------------
-# find dependencies
-#------------------------------------------------------------------------------
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/dependencies/include_all.cmake")
-
-#include(cmut_print_target_properties)
-#cmut_print_target_interface_properties(Boost::boost)
+cmut__dependency__build_with_conan(DEFAULT_CXX_STANDARD 14)
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/find_dependencies.cmake")
 
 
 

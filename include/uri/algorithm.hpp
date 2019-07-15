@@ -10,6 +10,8 @@
 
 #include <boost/spirit/include/qi_parse.hpp>
 
+#include <ciso646>
+
 
 namespace uri {
 

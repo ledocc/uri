@@ -6,17 +6,26 @@ build: false
 
 environment:
     PYTHON: "C:\\Python37"
-
-    CONAN_REFERENCE: "uri/0.3.99"
-    CONAN_USERNAME: "ledocc"
-    CONAN_LOGIN_USERNAME: "ledocc"
-    CONAN_CHANNEL: "testing"
-
+    CONAN_TOTAL_PAGES: 3
     matrix:
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
           CONAN_VISUAL_VERSIONS: 14
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_CURRENT_PAGE: 2
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+          CONAN_VISUAL_VERSIONS: 14
+          CONAN_CURRENT_PAGE: 3
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           CONAN_VISUAL_VERSIONS: 15
+          CONAN_CURRENT_PAGE: 1
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_CURRENT_PAGE: 2
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_CURRENT_PAGE: 3
 
 
 install:
