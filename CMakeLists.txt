@@ -12,9 +12,9 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/cmut/cmut.cmake" REQUIRED)
 # define project name
 #------------------------------------------------------------------------------
 cmut__config__print_info()
-cmut__project__read_version_file( version "${CMAKE_CURRENT_LIST_DIR}/version.txt" )
 
-project( uri VERSION ${version} )
+project( uri )
+cmut__project__set_version_from_file( "${CMAKE_CURRENT_LIST_DIR}/version.txt" )
 cmut__config__log_project_begin()
 
 cmut__project__get_build_time(${PROJECT_NAME}_BUILD_TIME)
@@ -34,13 +34,17 @@ option(BUILD_DEPENDENCIES "use conan to install/build dependencies" OFF)
 option(URI__FORCE_INCLUDE_CONAN_PATHS_CMAKE "Include \"conan_paths.cmake\" generated in binary directory by used with conan." OFF)
 
 cmut__config__default_build_type(Release)
+cmut__config__default_cxx_standard(14)
 
 
 
 ##--------------------------------------------------------------------------------------------------------------------##
 # install dependencies
 ##--------------------------------------------------------------------------------------------------------------------##
-cmut__dependency__build_with_conan(DEFAULT_CXX_STANDARD 14)
+cmut__dependency__build_with_conan(
+    CONANFILE conanfile.py
+    BUILD missing
+    )
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/find_dependencies.cmake")
 
 
@@ -96,11 +100,9 @@ endif()
 ##--------------------------------------------------------------------------------------------------------------------##
 
 cmut__install__install_config_and_version()
-cmut__install__install_config_directory(
-    DIRECTORY   "cmake/dependencies/find"
-    DESTINATION "dependencies/")
+cmut__install__config_dependencies_directory( "cmake/dependencies" )
 
-cmut__install__add_install_component_targets(devel runtime)
+cmut__install__component__make_targets(devel runtime)
 
 
 
