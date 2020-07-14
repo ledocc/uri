@@ -4,7 +4,7 @@ import os
 
 class UriConan(ConanFile):
     name = "uri"
-    version = tools.load("version.txt")
+    version = tools.load("version.txt").rstrip()
     author = "David Callu (callu.david at gmail.com)"
     license = "Boost Software License - Version 1.0"
     url = "https://github.com/ledocc/uri"
