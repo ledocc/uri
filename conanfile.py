@@ -13,7 +13,9 @@ class UriConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = dict( { "shared":False } )
+    
     exports = "version.txt"
+    no_copy_source = True
 
     generators = ("cmake","cmake_paths","virtualrunenv")
     scm = {
