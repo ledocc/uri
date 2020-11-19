@@ -13,7 +13,9 @@ class UriConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = dict( { "shared":False } )
+    
     exports = "version.txt"
+    no_copy_source = True
 
     generators = ("cmake","cmake_paths","virtualrunenv")
     scm = {
@@ -22,8 +24,8 @@ class UriConan(ConanFile):
         "revision": "auto",
         "submodule": "recursive"
     }
-    build_requires = (("cmake/3.17.3@"),
-                      ("ninja/1.10.0@" ))
+    build_requires = (("cmake/3.18.4@"),
+                      ("ninja/1.10.1@" ))
     requires = "boost/1.73.0@"
 
     def configure(self):
