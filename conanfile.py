@@ -24,8 +24,6 @@ class UriConan(ConanFile):
         "revision": "auto",
         "submodule": "recursive"
     }
-    build_requires = (("cmake/3.18.4@"),
-                      ("ninja/1.10.1@" ))
     requires = "boost/1.73.0@"
 
     def configure(self):
